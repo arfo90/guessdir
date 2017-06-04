@@ -9,11 +9,7 @@ module Guessdir
     end
 
     def scan
-      begin
-        return { overview: "There is no file in target folder"} unless @dir.entries().length > 2
-      rescue
-        return nil
-      end
+      return { overview: "There is no file in target folder"} unless @dir.entries().length > 2
     end
   end
 end
