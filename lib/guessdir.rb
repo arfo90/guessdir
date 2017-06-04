@@ -4,5 +4,5 @@ require 'bundler/setup'
 Bundler.require(:default)
 
 module Guessdir
- ## autoload classes here
+  autoload :Scanner, 'guessdir/scanner.rb'
 end
