@@ -1,11 +1,10 @@
 module Guessdir
   class Scanner
     def initialize(dir = './')
-      begin
-        @dir = Dir.new(dir)
-        @file_type = Hash.new
-        @number_of_folders = -2   #because we want skip '.' & '..'
-      end
+      @dir = Dir.new(dir)
+      @file_type = Hash.new
+      @number_of_folders = -2   #because we want skip '.' & '..'
+      @number_of_files = 0
     end
 
     def scan
@@ -20,11 +19,14 @@ module Guessdir
 
     private
 
+    attr_reader :number_of_files, :file_type
+
     def mark_file(file)
       file_dir = "#{@dir.path}/#{file}"
       unless File.file? file_dir
         @number_of_folders +=1
       else
+        @number_of_files += 1
         file_extension = file.split('.').last
         init_file_type! file_extension
         if !@file_type.key?(file_extension)
@@ -43,20 +45,30 @@ module Guessdir
     end
 
     def build_overview
-      file_type_highest = @file_type.values.max
-      highest_files =Hash @file_type.select { |k,v| v == file_type_highest && !k.nil? }
+      highest_files = get_highest_file_type
       number_of_folders_text = @number_of_folders > 0 ? "Folder has #{@number_of_folders} folder and" :
                                'no folder detected in this dir and'
-      puts "this projec is #{filename_mapper(highest_files.keys[0])}"
-      { overview: "#{number_of_folders_text}" }
+      number_of_files_text = number_of_files.zero? ? 'there is no file with this dir' :
+                              "#{number_of_files} files with #{calc_highest_files_percentage}"
+      { overview: "#{number_of_folders_text} #{number_of_files_text}" }
     end
-
 
     def filename_mapper(file_name)
       return 'Ruby' if file_name == 'rb'
       return 'php' if file_name == 'php'
       return 'xml' if file_name == 'xml'
       return 'empty' if file_name.nil?
+    end
+
+    def calc_highest_files_percentage
+      percentage = ( 100 / file_type.values.reduce(:+)) *
+        get_highest_file_type.values[0]
+      "#{percentage}% #{filename_mapper(get_highest_file_type.keys[0])} files"
+    end
+
+    def get_highest_file_type
+      file_type_highest = file_type.values.max
+      Hash file_type.select { |k,v| v == file_type_highest && !k.nil? }
     end
   end
 end
