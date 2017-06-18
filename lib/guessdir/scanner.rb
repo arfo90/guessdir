@@ -4,9 +4,7 @@ module Guessdir
       begin
         @dir = Dir.new(dir)
         @file_type = Hash.new
-        @number_of_files = 0
-      rescue
-        puts dir
+        @number_of_folders = -2   #because we want skip '.' & '..'
       end
     end
 
@@ -17,7 +15,6 @@ module Guessdir
       files.each do |file|
         mark_file file
       end
-
       build_overview
     end
 
@@ -25,9 +22,8 @@ module Guessdir
 
     def mark_file(file)
       file_dir = "#{@dir.path}/#{file}"
-        p "is it a file ? -----> #{file_dir} ---- #{File.file?(file_dir)}"
-      if File.file? "#{@dir}/#{file}"
-        @number_of_files +=1
+      unless File.file? file_dir
+        @number_of_folders +=1
       else
         file_extension = file.split('.').last
         init_file_type! file_extension
@@ -37,7 +33,6 @@ module Guessdir
           @file_type[file_extension] += 1
         end
       end
-      puts "this is file_types.. #{@file_type}"
     end
 
     def init_file_type!(file_extension)
@@ -50,8 +45,10 @@ module Guessdir
     def build_overview
       file_type_highest = @file_type.values.max
       highest_files =Hash @file_type.select { |k,v| v == file_type_highest && !k.nil? }
+      number_of_folders_text = @number_of_folders > 0 ? "Folder has #{@number_of_folders} folder and" :
+                               'no folder detected in this dir and'
       puts "this projec is #{filename_mapper(highest_files.keys[0])}"
-      { overview: "" }
+      { overview: "#{number_of_folders_text}" }
     end
 
 
