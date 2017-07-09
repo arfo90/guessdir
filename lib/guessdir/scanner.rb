@@ -14,7 +14,7 @@ module Guessdir
       files.each do |file|
         mark_file file
       end
-      build_overview
+      {guess: guess!, overview: build_overview, analyse: build_analyse.to_h}
     end
 
     private
@@ -47,10 +47,19 @@ module Guessdir
     def build_overview
       highest_files = get_highest_file_type
       number_of_folders_text = @number_of_folders > 0 ? "Folder has #{@number_of_folders} folder and" :
-                               'no folder detected in this dir and'
+        'no folder detected in this dir and'
       number_of_files_text = number_of_files.zero? ? 'there is no file with this dir' :
-                              "#{number_of_files} files with #{calc_highest_files_percentage}"
-      { overview: "#{number_of_folders_text} #{number_of_files_text}" }
+        "#{number_of_files} files with #{calc_highest_files_percentage}"
+      "#{number_of_folders_text} #{number_of_files_text}"
+    end
+
+    def build_analyse
+      file_type.map {|k,v| {k => calc_file_type_percentage(v)}}
+        .reduce(:merge)
+    end
+
+    def guess!
+      calc_highest_files_percentage true
     end
 
     def filename_mapper(file_name)
@@ -60,9 +69,16 @@ module Guessdir
       return 'empty' if file_name.nil?
     end
 
-    def calc_highest_files_percentage
+    def calc_file_type_percentage(files_count)
+      (100 / file_type.values.reduce(:+)) * files_count
+    end
+
+    def calc_highest_files_percentage(tldr = false)
       percentage = ( 100 / file_type.values.reduce(:+)) *
         get_highest_file_type.values[0]
+      if tldr
+        return filename_mapper(get_highest_file_type.keys[0])
+      end
       "#{percentage}% #{filename_mapper(get_highest_file_type.keys[0])} files"
     end
 
