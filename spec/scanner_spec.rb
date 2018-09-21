@@ -11,14 +11,13 @@ describe Guessdir::Scanner do
     end
     
     it "returns hash with overview that says folder is empty" do
-      expect(Guessdir::Scanner.new("#{File.dirname(__FILE__)}/test_resource/empty_folder").scan)
+      expect(Guessdir::Scanner.new("#{File.dirname(__FILE__)}/test_resource/empty_folder").analyse)
         .to eql({ overview: "There is no file in target folder"})
     end
-=begin
 
     it "returns hash with overview of files and their size" do
-      expect(Guessdir::Scanner.new("#{File.dirname(__FILE__)}/test_resource/ruby_project").scan)
-        to eql({ overview: "this is ruby project with 100%", ruby: {number_of_files: 3, distro:100}})
-=end
+      expect(Guessdir::Scanner.new("#{File.dirname(__FILE__)}/test_resource/ruby_project").analyse)
+        .to eql({ overview: "this is ruby project with 100%", ruby: {number_of_files: 3, distro:100}})
+    end
   end
 end

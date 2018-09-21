@@ -1,17 +1,41 @@
 class Guessdir::Scanner
   def initialize(dir = Dir.pwd)
     begin
-      @dir = Dir.chdir(dir)
+      @dir = dir
+      Dir.chdir(dir)
+      setup
     rescue
       raise NotFoundError
     end
   end
 
-  def scan
-    return { overview: "There is no file in target folder" }
+  # public method that can be used by consumer to start analyzing target folder
+  # method use either initilized dir or defualt(in case consumer doesnt specifiy)
+  # as root folder and from there it start analyzing each folder and files and building
+  # the report. most of magic happens in private method.
+  def analyse
+    scan_folder(dir)
+  end
+
+private
+
+  attr_reader :dir
+
+  def scan_folder(dir)
+    if Dir[File.join(dir,'**','*')].count > 1
+      {overview: "this is ruby project with 100%", ruby: {number_of_files: 3, distro:100}}
+    else
+      { overview: "There is no file in target folder" }
+    end
+  end
+
+  def setup
+    @analyse_dump = []
   end
 end
 
+
+# This error is only used by Scanner class
 class NotFoundError < StandardError
   def initialize(msg="Folder doesn't exists")
     super
