@@ -1,4 +1,4 @@
-class Scanner
+class Guessdir::Scanner
   def initialize(dir = Dir.pwd)
   end
 

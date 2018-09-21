@@ -3,4 +3,6 @@ require 'rubygems'
 require 'bundler/setup'
 Bundler.require(:default)
 
-autoload :Scanner, 'scanner.rb'
+module Guessdir
+  autoload :Scanner, 'scanner.rb'
+end
