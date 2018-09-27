@@ -3,7 +3,7 @@ class Guessdir::Scanner
     begin
       @dir = dir
       Dir.chdir(dir)
-      setup
+      @analyse_dump = []
     rescue
       raise NotFoundError
     end
@@ -20,6 +20,7 @@ class Guessdir::Scanner
 private
 
   attr_reader :dir
+  attr_accessor :analyse_dump
 
   def scan_folder(dir)
     if Dir[File.join(dir,'**','*')].count > 1
@@ -27,10 +28,6 @@ private
     else
       { overview: "There is no file in target folder" }
     end
-  end
-
-  def setup
-    @analyse_dump = []
   end
 end
 
